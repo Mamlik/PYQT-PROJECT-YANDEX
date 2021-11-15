@@ -1,5 +1,6 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget, QLabel
 import sqlite3
 
 
@@ -15,6 +16,11 @@ shopping.close()
 class User_Main_Window(QWidget):
     def __init__(self, login):
         super().__init__()
+        pixmap = QPixmap('111.png')
+        self.pixmap = pixmap.scaled(50, 45)
+        self.main_logo = QLabel(self)
+        self.main_logo.resize(50, 50)
+        self.main_logo.setPixmap(self.pixmap)
         self.login = login
         uic.loadUi('user_interface.ui', self)
         self.setWindowTitle('Главная Страница-YandexEda')

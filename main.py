@@ -1,6 +1,6 @@
 import sys
 import sqlite3
-from card_check import Card_Check
+from extra_modules import Card_Check, check_phone_correct
 from courier import *
 from user import *
 from admin import *
@@ -89,7 +89,7 @@ class Registration(QWidget):
         self.register_2.clicked.connect(self.run)
 
     def run(self):
-        if self.check_phone_correct(self.phone.text()) is False:
+        if check_phone_correct(self.phone.text()) is False:
             self.error_3.setText('Ошибка: неверно введён номер телефона')
             self.error_3.setStyleSheet("""color: #aa0000; \n font: 10pt "MS Shell Dlg 2";""")
         else:
@@ -179,65 +179,6 @@ class Registration(QWidget):
             self.user.show()
             self.close()
 
-    def check_phone_correct(self, n):
-        if len(n) == 0:
-            return False
-        mts = list(range(910, 919 + 1)) + list(range(980, 989 + 1))
-        megafon = list(range(920, 939 + 1))
-        beline = list(range(960, 969 + 1)) + list(range(902, 906 + 1))
-        try:
-            n = n.strip()
-            if n[0:2] != '+7':
-                if n[0] != '8':
-                    print(3 / 0)
-            n = n.replace(' ', '')
-            n = n.replace('\t', '')
-            flag = False
-            flag1 = False
-            if n.count('(') > 1 or n.count(')') > 1:
-                print(3 / 0)
-            elem1 = 0
-            elem2 = 0
-            for elem in n:
-                if elem == '(':
-                    flag = True
-                    elem1 = n.index(elem)
-                if elem == ')':
-                    if flag:
-                        flag1 = True
-                        elem2 = n.index(elem)
-                        break
-            if elem2 != 0:
-                n = n.replace(n[elem1], '')
-                n = n.replace(n[elem2 - 1], '')
-            if n.count('(') > 0 or n.count(')') > 0:
-                print(3 / 0)
-
-            if n[-1] == '-':
-                print(3 / 0)
-            n = n.split('-')
-            if '' in n:
-                n[n.index('')] = '-'
-            n = ''.join(n)
-            if '-' in n:
-                print(3 / 0)
-            if n[0] == '8':
-                n = '+7' + n[1:]
-            if len(n) == 12:
-                if n[1:].isdigit():
-                    format = int(n[2:5])
-                    if format not in mts and format not in megafon and format not in beline:
-                        return False
-                    return True
-                else:
-                    print(3 / 0)
-            else:
-                print(len(1))
-        except ZeroDivisionError:
-            return False
-        except TypeError:
-            return False
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -258,7 +199,7 @@ class MainWindow(QMainWindow):
             return False
         elif not ("auth_design.ui" in os.listdir(thisdir)):
             return False
-        elif not ("card_check.py" in os.listdir(thisdir)):
+        elif not ("extra_modules.py" in os.listdir(thisdir)):
             return False
         elif not ("courier.py" in os.listdir(thisdir)):
             return False
@@ -279,6 +220,8 @@ class MainWindow(QMainWindow):
         elif not ("user.py" in os.listdir(thisdir)):
             return False
         elif not ("user_interface.ui" in os.listdir(thisdir)):
+            return False
+        elif not ("111.png" in os.listdir(thisdir)):
             return False
         return True
 
