@@ -20,9 +20,9 @@ class Admin_Main_Window(QWidget):
             self.courier_list.addItem(f'{elem[0]},  (id {elem[1]})')
         self.courier_list.itemActivated.connect(self.type_courier_info)
         self.cancel_order.hide()
-        self.unsorted_orders.stateChanged.connect(self.show_unsorted_orders)
-        self.canceled_orders.stateChanged.connect(self.show_canceled_orders)
-        self.sorted_orders.stateChanged.connect(self.show_sorted_orders)
+        self.unsorted_orders.toggled.connect(self.show_unsorted_orders)
+        self.canceled_orders.toggled.connect(self.show_canceled_orders)
+        self.sorted_orders.toggled.connect(self.show_sorted_orders)
         self.order_list.itemActivated.connect(self.type_order_info)
         self.exp_lbl.hide()
         self.confirm_btn.hide()
@@ -99,47 +99,77 @@ color: rgb(153, 0, 0);""")
                                  f'Номер телефона курьера: {courier_phone}')
 
     def show_unsorted_orders(self):
-        if self.unsorted_orders.isChecked():
-            orders = cur.execute("""SELECT order_list.id FROM order_list WHERE order_list.stats = 'unsorted'""").fetchall()
-            for elem in orders:
-                self.order_list.addItem(f'Заказ #{elem[0]}')
-        else:
-            orders = cur.execute(
+        try:
+            self.about_order.setText('')
+            self.confirm_btn.hide()
+            self.cancel_order.hide()
+            self.exp_lbl.hide()
+            if self.unsorted_orders.isChecked():
+                orders = cur.execute("""SELECT order_list.id FROM order_list WHERE order_list.stats = 'unsorted'""").fetchall()
+                for elem in orders:
+                    self.order_list.addItem(f'Заказ #{elem[0]}')
+            else:
+                orders = cur.execute(
                 """SELECT order_list.id FROM order_list WHERE order_list.stats = 'unsorted'""").fetchall()
-            for elem in orders:
-                item = self.order_list.findItems(f'Заказ #{elem[0]}', Qt.MatchExactly)[0]
-                index = self.order_list.indexFromItem(item).row()
-                self.order_list.takeItem(index)
+                for elem in orders:
+                    item = self.order_list.findItems(f'Заказ #{elem[0]}', Qt.MatchExactly)[0]
+                    index = self.order_list.indexFromItem(item).row()
+                    self.order_list.takeItem(index)
+        except:
+            pass
 
     def show_sorted_orders(self):
-        if self.sorted_orders.isChecked():
-            orders = cur.execute("""SELECT order_list.id FROM order_list WHERE order_list.stats = 'sorted'""").fetchall()
-            for elem in orders:
-                i = QListWidgetItem(f'Заказ #{elem[0]}')
-                i.setBackground(QColor('#2a5e00'))
-                self.order_list.addItem(i)
-        else:
-            orders = cur.execute(
+        try:
+            self.about_order.setText('')
+            self.confirm_btn.hide()
+            self.cancel_order.hide()
+            self.exp_lbl.hide()
+            if self.sorted_orders.isChecked():
+                orders = cur.execute("""SELECT order_list.id FROM order_list WHERE order_list.stats = 'sorted'""").fetchall()
+                for elem in orders:
+                    i = QListWidgetItem(f'Заказ #{elem[0]}')
+                    i.setBackground(QColor('#2a5e00'))
+                    self.order_list.addItem(i)
+            else:
+                orders = cur.execute(
                 """SELECT order_list.id FROM order_list WHERE order_list.stats = 'sorted'""").fetchall()
-            for elem in orders:
-                item = self.order_list.findItems(f'Заказ #{elem[0]}', Qt.MatchExactly)[0]
-                index = self.order_list.indexFromItem(item).row()
-                self.order_list.takeItem(index)
+                for elem in orders:
+                    item = self.order_list.findItems(f'Заказ #{elem[0]}', Qt.MatchExactly)[0]
+                    index = self.order_list.indexFromItem(item).row()
+                    self.order_list.takeItem(index)
+                orders_canceled = cur.execute(
+                """SELECT order_list.id FROM order_list WHERE order_list.stats = 'canceled'""").fetchall()
+                for elem in orders_canceled:
+                    try:
+                        item = self.order_list.findItems(f'Заказ #{elem[0]}', Qt.MatchExactly)[0]
+                        index = self.order_list.indexFromItem(item).row()
+                        self.order_list.takeItem(index)
+                    except:
+                        pass
+        except:
+            pass
 
     def show_canceled_orders(self):
-        if self.canceled_orders.isChecked():
-            orders = cur.execute("""SELECT order_list.id FROM order_list WHERE order_list.stats = 'canceled'""").fetchall()
-            for elem in orders:
-                i = QListWidgetItem(f'Заказ #{elem[0]}')
-                i.setBackground(QColor('#981100'))
-                self.order_list.addItem(i)  # todo if mistake
-        else:
-            orders = cur.execute(
+        try:
+            self.about_order.setText('')
+            self.confirm_btn.hide()
+            self.cancel_order.hide()
+            self.exp_lbl.hide()
+            if self.canceled_orders.isChecked():
+                orders = cur.execute("""SELECT order_list.id FROM order_list WHERE order_list.stats = 'canceled'""").fetchall()
+                for elem in orders:
+                    i = QListWidgetItem(f'Заказ #{elem[0]}')
+                    i.setBackground(QColor('#981100'))
+                    self.order_list.addItem(i)
+            else:
+                orders = cur.execute(
                 """SELECT order_list.id FROM order_list WHERE order_list.stats = 'canceled'""").fetchall()
-            for elem in orders:
-                item = self.order_list.findItems(f'Заказ #{elem[0]}', Qt.MatchExactly)[0]
-                index = self.order_list.indexFromItem(item).row()
-                self.order_list.takeItem(index)
+                for elem in orders:
+                    item = self.order_list.findItems(f'Заказ #{elem[0]}', Qt.MatchExactly)[0]
+                    index = self.order_list.indexFromItem(item).row()
+                    self.order_list.takeItem(index)
+        except:
+            pass
 
     def change_status_to_sorted(self):
         stats = cur.execute(

@@ -44,16 +44,6 @@ color: rgb(255, 255, 255);</string>
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QCheckBox" name="checkBox_4">
-         <property name="styleSheet">
-          <string notr="true">font: 12pt &quot;Segoe UI Symbol&quot;;</string>
-         </property>
-         <property name="text">
-          <string>только незанятые курьеры</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item row="0" column="0">
@@ -75,7 +65,7 @@ color: rgb(255, 255, 255);</string>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QCheckBox" name="unsorted_orders">
+          <widget class="QRadioButton" name="unsorted_orders">
            <property name="styleSheet">
             <string notr="true">font: 12pt &quot;Segoe UI Symbol&quot;;</string>
            </property>
@@ -85,7 +75,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="canceled_orders">
+          <widget class="QRadioButton" name="canceled_orders">
            <property name="styleSheet">
             <string notr="true">font: 12pt &quot;MS Shell Dlg 2&quot;;</string>
            </property>
@@ -95,7 +85,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="sorted_orders">
+          <widget class="QRadioButton" name="sorted_orders">
            <property name="styleSheet">
             <string notr="true">font: 12pt &quot;MS Shell Dlg 2&quot;;</string>
            </property>

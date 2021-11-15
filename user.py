@@ -90,35 +90,38 @@ class User_Main_Window(QWidget):
         self.total.setValue(0)
 
     def type_order_info(self, item):
-        item = item.text().split()
-        stat = cur.execute(f"""SELECT order_list.stats
+        try:
+            item = item.text().split()
+            stat = cur.execute(f"""SELECT order_list.stats
          FROM order_list WHERE order_list.id = {item[1][1:]}""").fetchall()[0][0]
-        if stat == 'unsorted':
-            stat = 'Заказ еще не подтверждён'
-        elif stat == 'sorted':
-            stat = 'Заказ подтвержден, скоро он будет доставлен'
-        elif stat == 'canceled':
-            stat = 'Заказ отклонён курьером, скоро с вами свяжется администратор, для разрешения спора'
-        data = cur.execute(f"""SELECT order_list.item, order_list.total_price
+            if stat == 'unsorted':
+                stat = 'Заказ еще не подтверждён'
+            elif stat == 'sorted':
+                stat = 'Заказ подтвержден, скоро он будет доставлен'
+            elif stat == 'canceled':
+                stat = 'Заказ отклонён курьером, скоро с вами свяжется администратор, для разрешения спора'
+            data = cur.execute(f"""SELECT order_list.item, order_list.total_price
          FROM order_list WHERE order_list.id = {item[1][1:]}""").fetchall()[0]
-        items = data[0]
-        price = data[1]
-        courier_logins_1 = cur.execute(f"""SELECT courier_info.courier_fio FROM courier_info,
+            items = data[0]
+            price = data[1]
+            courier_logins_1 = cur.execute(f"""SELECT courier_info.courier_fio FROM courier_info,
                  courier_list WHERE courier_list."order" = {item[1][1:]} AND courier_list.courier = courier_info.id""").fetchall()
-        courier_logins = [elem[0] for elem in courier_logins_1]
-        courier_login = cur.execute(f"""SELECT courier_list.courier_exact_id FROM
+            courier_logins = [elem[0] for elem in courier_logins_1]
+            courier_login = cur.execute(f"""SELECT courier_list.courier_exact_id FROM
                  courier_list WHERE courier_list."order" = {item[1][1:]}""").fetchall()
-        if len(courier_login) == 0:
-            courier_login = 'Нет назначенного курьера'
-            courier_phone = 'Нет назначенного курьера'
-        elif courier_login[0][0] is None:
-            courier_login = 'Нет назначенного курьера'
-            courier_phone = 'Нет назначенного курьера'
-        else:
-            courier_login = courier_login[0][0]
-            courier_phone = cur.execute(f"""SELECT courier_info.courier_phone
+            if len(courier_login) == 0:
+                courier_login = 'Нет назначенного курьера'
+                courier_phone = 'Нет назначенного курьера'
+            elif courier_login[0][0] is None:
+                courier_login = 'Нет назначенного курьера'
+                courier_phone = 'Нет назначенного курьера'
+            else:
+                courier_login = courier_login[0][0]
+                courier_phone = cur.execute(f"""SELECT courier_info.courier_phone
                      FROM courier_info WHERE courier_info.id = {courier_login}""").fetchall()[0][0]
-            courier_login = cur.execute(f"""SELECT courier_info.courier_fio FROM courier_info
+                courier_login = cur.execute(f"""SELECT courier_info.courier_fio FROM courier_info
                      WHERE courier_info.id = {courier_login}""").fetchall()[0][0]
-        self.order_status.setText(f"""{stat}\nЗаказано: {items}\nИтоговая цена заказа: {price}\nДанные о исполняющем курьере:\n
+            self.order_status.setText(f"""{stat}\nЗаказано: {items}\nИтоговая цена заказа: {price}\nДанные о исполняющем курьере:\n
 ФИО курьера: {courier_login}\nНомер телефона курьера: {courier_phone}""")
+        except:
+            pass
