@@ -4,10 +4,15 @@ from card_check import Card_Check
 from courier import *
 from user import *
 from admin import *
+from PyQt5 import uic
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit, QWidget, QMessageBox
+import os
+
+
 con = sqlite3.connect("data_base_1.db")
 cur = con.cursor()
-ADMIN_LOGIN = 'ADMIN'
-ADMIN_PASSWORD = 'ADMIN'
+ADMIN_LOGIN = 'a'
+ADMIN_PASSWORD = 'a'
 
 
 class Authorization(QWidget):
@@ -52,7 +57,11 @@ class Authorization(QWidget):
         self.close()
 
     def user_start(self):
-        self.user = User_Main_Window()
+        self.login = self.loginx
+        self.login_id = cur.execute(f"""SELECT
+                 user_info.id FROM user_info WHERE user_info.user_login = '{self.login}'""").fetchall()[0][
+            0]
+        self.user = User_Main_Window(self.login)
         self.user.show()
         self.close()
 
@@ -160,12 +169,13 @@ class Registration(QWidget):
             card_holder = str(self.card_holder.text())
             password = str(self.password1.text())
             login = str(self.login.text())
+            print(1)
             cur.execute(f"""INSERT INTO user_info(user_login, user_password,
              user_fio, user_adress, user_card_num, user_card_working_date, user_card_name_holder, user_cvc,
               user_phone_number) VALUES ('{login}', '{password}', '{fio}', '{adress}',
 '{card_num}', '{card_date}', '{card_holder}', '{cvc}', '{phone}');""")
             con.commit()
-            self.user = User_Main_Window()
+            self.user = User_Main_Window(login)
             self.user.show()
             self.close()
 
@@ -232,10 +242,53 @@ class Registration(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        if self.check_file_correction() is False:
+            self.show_dialog()
+            raise ImportError
         uic.loadUi('main_design.ui', self)
         self.setWindowTitle('YandexEda')
         self.widget = Authorization()
         self.widget.show()
+
+    def check_file_correction(self):
+        thisdir = "./"
+        if not ("admin.py" in os.listdir(thisdir)):
+            return False
+        elif not ("admin_interface.ui" in os.listdir(thisdir)):
+            return False
+        elif not ("auth_design.ui" in os.listdir(thisdir)):
+            return False
+        elif not ("card_check.py" in os.listdir(thisdir)):
+            return False
+        elif not ("courier.py" in os.listdir(thisdir)):
+            return False
+        elif not ("courier_interface.ui" in os.listdir(thisdir)):
+            return False
+        elif not ("data_base_1.db" in os.listdir(thisdir)):
+            return False
+        elif not ("design.ui" in os.listdir(thisdir)):
+            return False
+        elif not ("main.py" in os.listdir(thisdir)):
+            return False
+        elif not ("main_design.ui" in os.listdir(thisdir)):
+            return False
+        elif not ("register_design.ui" in os.listdir(thisdir)):
+            return False
+        elif not ("shopping_list.txt" in os.listdir(thisdir)):
+            return False
+        elif not ("user.py" in os.listdir(thisdir)):
+            return False
+        elif not ("user_interface.ui" in os.listdir(thisdir)):
+            return False
+        return True
+
+    def show_dialog(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Критическая ошибка")
+        msg.setText("Файлы программы повреждены. Открытие невозможно")
+        msg.setIcon(QMessageBox.Critical)
+
+        msg.exec_()
 
 
 if __name__ == '__main__':
