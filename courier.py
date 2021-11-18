@@ -35,6 +35,7 @@ class Courier_Main_Window(QWidget):
         self.list.itemActivated.connect(self.itemActivated_event)
         self.list_1.itemActivated.connect(self.itemActivated_event_1)
         self.accept.clicked.connect(self.deny_accept)
+        self.update_order.clicked.connect(self.update_orders)
 
     def itemActivated_event_1(self, item):
         if item.text() == '':
@@ -107,3 +108,24 @@ class Courier_Main_Window(QWidget):
             self.about_order.hide()
             self.accept.hide()
             self.Accept()
+
+    def update_orders(self):
+        try:
+            self.list_1.clear()
+            self.list.clear()
+            orders = cur.execute(f"""SELECT order_list.id FROM
+                 courier_list, order_list WHERE (courier_list.courier_exact_id = '{self.user_id}')
+                  AND (courier_list."order" = order_list.id) AND (order_list.stats != 'canceled')""").fetchall()
+            for elem in set(orders):
+                elem = elem[0]
+                self.list_1.addItem(f'Заказ {elem}')
+            pr_orders = cur.execute(f"""SELECT order_list.id FROM
+                 courier_list, order_list WHERE (courier_list.courier_exact_id is NULL)
+                  AND (courier_list."order" = order_list.id) AND (courier_list.courier = {self.user_id})
+                   AND (order_list.stats != 'canceled')""").fetchall()
+            for elem in set(pr_orders):
+                elem = elem[0]
+                self.list.addItem(f'Заказ {elem}')
+
+        except:
+            pass
